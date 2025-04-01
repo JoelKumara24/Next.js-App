@@ -50,39 +50,44 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-black px-4">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md space-y-6"
+        className="bg-zinc-950 p-8 rounded-2xl shadow-2xl w-full max-w-md space-y-6"
+
       >
-        <h2 className="text-2xl font-bold text-center text-black">Create an Account</h2>
+        <h2 className="text-2xl font-bold text-center text-white">Create an Account</h2>
+
 
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
         <input
+        className="w-full p-2 rounded bg-zinc-900 text-white border border-zinc-700 placeholder-black-400"
+
           type="text"
           name="username"
           placeholder="Username"
           value={form.username}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
           required
         />
 
         <input
+        className="w-full p-2 rounded bg-zinc-900 text-white border border-zinc-700 placeholder-black-400"
+
           type="email"
           name="email"
           placeholder="Email"
           value={form.email}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
           required
         />
 
         <input
+        className="w-full p-2 rounded bg-zinc-900 text-white border border-zinc-700 placeholder-black-400"
+
           type="password"
           name="password"
           placeholder="Password"
           value={form.password}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
           required
         />
 
