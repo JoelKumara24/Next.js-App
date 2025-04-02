@@ -29,7 +29,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black text-white">
+    <div className="relative flex min-h-screen items-center justify-center bg-black text-white">
+      
+      {/* Home Button Top Right */}
+      <Link
+        href="/"
+        className="absolute top-4 right-4 bg-white text-black px-4 py-2 rounded hover:bg-gray-200 font-semibold text-sm"
+      >
+        Home
+      </Link>
+
       <form onSubmit={handleLogin} className="flex flex-col gap-4 w-96">
         <h1 className="text-3xl font-bold">Login</h1>
 
@@ -54,18 +63,14 @@ export default function LoginPage() {
         <button className="bg-white text-black py-2 rounded font-semibold" type="submit">
           Login
         </button>
-      </form>
-      <p className="mt-4 text-sm">
-          Don&apos;t have an account?{' '}
+
+        <p className="mt-2 text-sm text-center">
+          Don&apos;t have an account?{" "}
           <Link href="/register" className="underline text-blue-400 hover:text-blue-600">
             Register
           </Link>
-          {' '}|{' '}
-  <Link href="/" className="underline text-blue-400 hover:text-blue-600">
-    Home
-  </Link>
-      </p>
-      
+        </p>
+      </form>
     </div>
   );
 }

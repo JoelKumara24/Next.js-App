@@ -81,7 +81,7 @@ export default function RegisterPage() {
         />
 
         <input
-        className="w-full p-2 rounded bg-zinc-900 text-white border border-zinc-700 placeholder-black-400"
+        className="w-full p-2 rounded bg-zinc-900 text-white border border-zinc-700 placeholder-gray"
 
           type="password"
           name="password"
@@ -93,7 +93,7 @@ export default function RegisterPage() {
 
         <button
           type="submit"
-          className="w-full bg-black text-white p-2 rounded hover:opacity-90"
+          className="w-full bg-white text-black p-2 rounded hover:opacity-90"
           disabled={loading}
         >
           {loading ? 'Creating Account...' : 'Register'}
