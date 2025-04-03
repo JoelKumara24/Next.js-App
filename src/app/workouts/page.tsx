@@ -79,10 +79,10 @@ export default function WorkoutsPage() {
               Workout for the Day
             </button>
             <button
-              onClick={() => alert("Weekly routine flow coming next 😉")}
+              onClick={() => router.push("/workouts/custom-loop")}
               className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
             >
-              Workout for the Week
+              Customized Routine
             </button>
           </div>
         )}
