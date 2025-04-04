@@ -9,31 +9,58 @@ export default function CustomLoopEntryPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const existing = localStorage.getItem("workout_week");
-    setHasRoutine(!!existing);
+    const fetchRoutine = async () => {
+      
+  
+      try {
+        const res = await fetch("/api/routine", {
+          credentials: "include", // ✅ sends cookie
+        });
+  
+        if (!res.ok) {
+          console.warn("Routine fetch failed:", res.status);
+          return;
+        }
+  
+        const data = await res.json();
+        console.log("Routine loaded:", data);
+  
+        if (data?.days?.length > 0) {
+          setHasRoutine(true); // or setRoutine(data.days) etc.
+        }
+      } catch (err) {
+        console.error("Routine fetch error:", err);
+      }
+    };
+  
+    fetchRoutine();
   }, []);
-
-  const handleSubmit = (e: React.FormEvent) => {
+  
+  
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (days > 0) {
-      if (hasRoutine) {
-        const confirmEdit = window.confirm(
-          "A routine already exists. Do you want to EDIT it instead?\n\nClick OK to edit, or Cancel to create a new one."
-        );
+    if (days <= 0) return;
 
-        if (confirmEdit) {
-          // Go to edit with special flag
-          router.push("/workouts/custom-loop/setup?edit=true");
-        } else {
-          // Clear and create new
-          localStorage.removeItem("workout_week");
-          router.push(`/workouts/custom-loop/setup?days=${days}`);
-        }
+    if (hasRoutine) {
+      const confirmEdit = window.confirm(
+        "A routine already exists. Do you want to EDIT it instead?\n\nClick OK to edit, or Cancel to create a new one."
+      );
+
+      if (confirmEdit) {
+        router.push("/workouts/custom-loop/setup?edit=true");
       } else {
-        // No existing routine
+        // DELETE existing routine and create a new one
+        
+await fetch("/api/routine", {
+  method: "DELETE",
+  credentials: "include",
+});
+
         router.push(`/workouts/custom-loop/setup?days=${days}`);
       }
+    } else {
+      router.push(`/workouts/custom-loop/setup?days=${days}`);
     }
   };
 

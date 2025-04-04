@@ -14,6 +14,8 @@ const WorkoutSchema = new mongoose.Schema(
     type: String, // "day" or "week"
     completed: Boolean,
     data: [ExerciseSchema],
+       // Optional: store user ID if auth
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
   },
   { timestamps: true }
 );

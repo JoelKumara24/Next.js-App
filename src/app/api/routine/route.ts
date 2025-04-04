@@ -1,41 +1,57 @@
 import { NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongodb";
 import Routine from "@/models/Routine";
+import { verifyToken } from "@/lib/auth";
+import { cookies } from "next/headers";
 
+export async function GET() {
+  const token = (await cookies()).get("token")?.value;
+  const user = token ? verifyToken(token) : null;
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-export async function POST(req: Request) {
-  try {
-    const body = await req.json();
-    await connectToDB();
-
-    const saved = await Routine.create(body);
-    return NextResponse.json(saved);
-  } catch (err) {
-    console.error("Failed to save routine", err);
-    return NextResponse.json({ error: "Failed to save routine" }, { status: 500 });
-  }
+  await connectToDB();
+  const routine = await Routine.findOne({ userId: user.userId });
+  return NextResponse.json(routine);
 }
 
-// ✅ GET - Fetch routine
-export async function GET() {
-    try {
-      await connectToDB();
-      const routines = await Routine.find();
-      return NextResponse.json(routines);
-    } catch (err) {
-      console.error("Failed to fetch routine", err);
-      return NextResponse.json({ error: "Failed to fetch routine" }, { status: 500 });
-    }
-  }
+export async function POST(req: Request) {
+  const token = (await cookies()).get("token")?.value;
+  const user = token ? verifyToken(token) : null;
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // DELETE: Clear all routines
+  const body = await req.json();
+  await connectToDB();
+
+  await Routine.deleteMany({ userId: user.userId });
+
+  const saved = await Routine.create({ ...body, userId: user.userId });
+  return NextResponse.json(saved);
+}
+
 export async function DELETE() {
-    try {
-      await connectToDB();
-      await Routine.deleteMany(); // Later: filter by userId
-      return NextResponse.json({ message: "Routine deleted" });
-    } catch (err) {
-      return NextResponse.json({ error: "Failed to delete routine" }, { status: 500 });
-    }
-  }
-  
+  const token = (await cookies()).get("token")?.value;
+  const user = token ? verifyToken(token) : null;
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  await connectToDB();
+  await Routine.deleteMany({ userId: user.userId });
+  return NextResponse.json({ message: "Routine deleted" });
+}
+
+export async function PATCH(req: Request) {
+  const token = (await cookies()).get("token")?.value;
+  const user = token ? verifyToken(token) : null;
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { updateDay, updatedExercises } = await req.json();
+  await connectToDB();
+
+  const routine = await Routine.findOne({ userId: user.userId });
+  if (!routine) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  routine.days[updateDay] = updatedExercises;
+  routine.currentDayIndex = (updateDay + 1) % routine.days.length;
+  await routine.save();
+
+  return NextResponse.json({ message: "Updated" });
+}

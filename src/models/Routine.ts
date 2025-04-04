@@ -16,7 +16,7 @@ const RoutineSchema = new mongoose.Schema(
       default: 0,
     },
     // Optional: store user ID if auth
-    // userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
   },
   { timestamps: true }
 );

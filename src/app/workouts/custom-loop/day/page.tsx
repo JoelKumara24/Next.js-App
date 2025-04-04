@@ -17,24 +17,39 @@ export default function CustomWorkoutDayPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const stored = localStorage.getItem("workout_week");
-    if (stored) {
+    const fetchRoutine = async () => {
+      
+
       try {
-        const parsed = JSON.parse(stored);
-        const index = parsed.currentDayIndex || 0;
+        const res = await fetch("/api/routine", {
+          credentials: "include", // ✅ sends cookie
+        });
+
+        const routine = await res.json(); // ✅ directly use the object
+
+
+        if (!res.ok || !routine?.days?.length) throw new Error("No routine found");
+
+        const index = routine.currentDayIndex || 0;
         setDayIndex(index);
-        const today = parsed.days[index].map((ex: Exercise) => ({
+
+        const today = routine.days[index].map((ex: Exercise) => ({
           ...ex,
           checked: ex.checked || false,
         }));
+
         setExercises(today);
       } catch (err) {
-        console.error("Failed to parse workout_week");
+        console.error("Failed to load routine from DB", err);
+        alert("No routine found");
+        router.push("/workouts/custom-loop/view");
       }
-    }
-  }, []);
+    };
 
-  const handleCheck = (i: number) => {
+    fetchRoutine();
+  }, [router]);
+
+  const handleCheck = async (i: number) => {
     const updated = [...exercises];
     updated[i].checked = !updated[i].checked;
     setExercises(updated);
@@ -42,14 +57,24 @@ export default function CustomWorkoutDayPage() {
     const allChecked = updated.every(ex => ex.checked);
     if (allChecked) {
       alert("🎉 Workout Complete!");
-      
-      // Update localStorage
-      const stored = localStorage.getItem("workout_week");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        parsed.days[dayIndex] = updated;
-        parsed.currentDayIndex = (dayIndex + 1) % parsed.days.length; // loop back if end
-        localStorage.setItem("workout_week", JSON.stringify(parsed));
+
+      try {
+        
+
+        await fetch("/api/routine", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // ✅
+          body: JSON.stringify({
+            updateDay: dayIndex,
+            updatedExercises: updated,
+          }),
+        });
+
+      } catch (err) {
+        console.error("Failed to update routine after workout", err);
       }
 
       router.push("/workouts/custom-loop/view");
@@ -60,11 +85,11 @@ export default function CustomWorkoutDayPage() {
     <div className="text-white bg-black min-h-screen p-10">
       <h1 className="text-2xl font-bold mb-6">Workout - Day {dayIndex + 1}</h1>
       <button
-      onClick={() => router.push("/workouts/custom-loop/view")}
-      className="mb-4 bg-gray-700 hover:bg-gray-600 text-sm px-4 py-2 rounded"
-    >
-      ← Back
-    </button>
+        onClick={() => router.push("/workouts/custom-loop/view")}
+        className="mb-4 bg-gray-700 hover:bg-gray-600 text-sm px-4 py-2 rounded"
+      >
+        ← Back
+      </button>
 
       <table className="table-auto w-full text-left">
         <thead>

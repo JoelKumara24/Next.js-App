@@ -1,11 +1,16 @@
 // src/lib/auth.ts
 import jwt from "jsonwebtoken";
 
-export function verifyToken(token: string) {
+export interface TokenPayload {
+  userId: string;
+  email: string;
+}
+
+export function verifyToken(token: string): TokenPayload | null {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    return decoded; // contains userId, email, etc.
+    return jwt.verify(token, process.env.JWT_SECRET!) as TokenPayload;
   } catch (err) {
+    console.error("Invalid token:", err); // <-- Add this!
     return null;
   }
 }

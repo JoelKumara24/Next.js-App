@@ -15,14 +15,35 @@ export default function ViewCustomRoutinePage() {
   const router = useRouter();
   const [routine, setRoutine] = useState<Exercise[][]>([]);
   const [dayIndex, setDayIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem("workout_week");
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setRoutine(parsed.days || []);
-      setDayIndex(parsed.currentDayIndex || 0);
-    }
+    const fetchRoutine = async () => {
+      
+
+      try {
+        const res = await fetch("/api/routine", {
+          credentials: "include",
+        });
+        
+
+        if (!res.ok) throw new Error("Failed to fetch routine");
+
+        const userRoutine = await res.json();
+
+if (userRoutine?.days?.length) {
+  setRoutine(userRoutine.days);
+  setDayIndex(userRoutine.currentDayIndex || 0);
+}
+
+      } catch (err) {
+        console.error("Error loading routine:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRoutine();
   }, []);
 
   const handleStartWorkout = () => {
@@ -30,8 +51,16 @@ export default function ViewCustomRoutinePage() {
   };
 
   const handleEdit = () => {
-    router.push(`/workouts/custom-loop/setup?days=${routine.length}`);
+    router.push(`/workouts/custom-loop/setup?days=${routine.length}&edit=true`);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   if (!routine.length) {
     return (
@@ -44,9 +73,11 @@ export default function ViewCustomRoutinePage() {
   return (
     <div className="min-h-screen bg-black text-white p-10">
       <h1 className="text-3xl font-bold mb-6">Your Custom Routine</h1>
-      <p className="mb-4 text-lg">Today is <span className="font-semibold">Day {dayIndex + 1}</span></p>
+      <p className="mb-4 text-lg">
+        Today is <span className="font-semibold">Day {dayIndex + 1}</span>
+      </p>
 
-      <div className="flex gap-4">
+      <div className="flex gap-4 mb-6">
         <button
           onClick={handleStartWorkout}
           className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
@@ -60,12 +91,13 @@ export default function ViewCustomRoutinePage() {
           Edit Routine
         </button>
       </div>
+
       <button
-      onClick={() => router.push("/workouts")}
-      className="mb-4 bg-gray-700 hover:bg-gray-600 text-sm px-4 py-2 rounded"
-    >
-      ← Back
-    </button>
+        onClick={() => router.push("/workouts")}
+        className="bg-gray-700 hover:bg-gray-600 text-sm px-4 py-2 rounded"
+      >
+        ← Back
+      </button>
     </div>
   );
 }
