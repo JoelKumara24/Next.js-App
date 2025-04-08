@@ -4,56 +4,65 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface Exercise {
-  name: string;
+  exercise: string;
   sets: string;
   reps: string;
   time: string;
   done: boolean;
+  checked?: boolean;
 }
 
 export default function ViewWorkoutPage() {
-    const [exercises, setExercises] = useState<any[]>([]);
-    const router = useRouter();
-  
-    useEffect(() => {
-        const fetchWorkout = async () => {
-          try {
-            const res = await fetch("/api/workouts");
-            const data = await res.json();
-            const latest = data[data.length - 1]; // get latest workout
-            setExercises(latest?.data || []);
-          } catch (err) {
-            console.error("Failed to fetch workout", err);
-          }
-        };
-      
-        fetchWorkout();
-      }, []);
-      
-  
-    const handleCheckboxChange = (index: number) => {
-      const updated = [...exercises];
-      updated[index].checked = !updated[index].checked;
-      setExercises(updated);
-  
-      // Save updated workout back to localStorage
-      //const stored = localStorage.getItem("workout_day");
-     // if (stored) {
-     //   const parsed = JSON.parse(stored);
-     //   parsed.data = updated;
-     //   localStorage.setItem("workout_day", JSON.stringify(parsed));
-     // }
-  
-      const allChecked = updated.every((e) => e.checked);
-      if (allChecked) {
-        alert("🎉 Congrats! You completed your workout!");
-        router.push("/workouts");
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [hasWorkout, setHasWorkout] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchWorkout = async () => {
+      try {
+        const res = await fetch("/api/workouts", {
+          credentials: "include",
+        });
+
+        const data = await res.json();
+        const latest = data[data.length - 1];
+
+        if (latest?.data?.length) {
+          setExercises(latest.data);
+          setHasWorkout(true);
+        } else {
+          setHasWorkout(false);
+        }
+      } catch (err) {
+        console.error("Failed to fetch workout", err);
+        setHasWorkout(false);
       }
     };
-  
-    return (
-      <div className="text-white min-h-screen bg-black p-10">
-        <h1 className="text-3xl mb-6 font-bold">Today's Workout</h1>
+
+    fetchWorkout();
+  }, []);
+
+  const handleCheckboxChange = (index: number) => {
+    const updated = [...exercises];
+    updated[index].checked = !updated[index].checked;
+    setExercises(updated);
+
+    const allChecked = updated.every((e) => e.checked);
+    if (allChecked) {
+      alert("🎉 Congrats! You completed your workout!");
+      router.push("/workouts");
+    }
+  };
+
+  const handleEditOrAdd = () => {
+    router.push("/workouts/new-day");
+  };
+
+  return (
+    <div className="text-white min-h-screen bg-black p-10">
+      <h1 className="text-3xl mb-6 font-bold">Today's Workout</h1>
+
+      {exercises.length > 0 ? (
         <table className="table-auto w-full text-left">
           <thead>
             <tr className="text-gray-400 border-b border-gray-600">
@@ -82,6 +91,16 @@ export default function ViewWorkoutPage() {
             ))}
           </tbody>
         </table>
-      </div>
-    );
-  }
+      ) : (
+        <p>No workout added for today.</p>
+      )}
+
+      <button
+        onClick={handleEditOrAdd}
+        className="mt-6 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
+      >
+        {hasWorkout ? "Edit Workout" : "Add Workout"}
+      </button>
+    </div>
+  );
+}

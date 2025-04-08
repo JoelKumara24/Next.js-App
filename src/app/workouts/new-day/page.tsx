@@ -1,13 +1,34 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function AddWorkoutDayPage() {
   const router = useRouter();
   const [exercises, setExercises] = useState([
     { exercise: "", sets: "", reps: "", time: "" },
   ]);
+  const [editing, setEditing] = useState(false);
+
+  useEffect(() => {
+    const fetchExistingWorkout = async () => {
+      try {
+        const res = await fetch("/api/workouts", {
+          credentials: "include",
+        });
+        const data = await res.json();
+        const latest = data[data.length - 1];
+        if (latest?.data?.length) {
+          setExercises(latest.data);
+          setEditing(true);
+        }
+      } catch (err) {
+        console.error("Failed to fetch existing workout", err);
+      }
+    };
+
+    fetchExistingWorkout();
+  }, []);
 
   const handleChange = (index: number, field: string, value: string) => {
     const updated = [...exercises];
@@ -21,29 +42,38 @@ export default function AddWorkoutDayPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     const workout = {
       type: "day",
       completed: false,
       data: exercises.map((ex) => ({ ...ex, checked: false })),
     };
-  
+
+    if (editing) {
+      // Delete the latest one before re-saving
+      await fetch("/api/workouts", {
+        method: "DELETE",
+        credentials: "include",
+      });
+    }
+
     const res = await fetch("/api/workouts", {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(workout),
     });
-  
+
     if (res.ok) {
       router.push("/workouts");
     }
   };
-  
-  
 
   return (
     <div className="text-white min-h-screen bg-black p-10">
-      <h1 className="text-2xl mb-6 font-semibold">Add Workout for the Day</h1>
+      <h1 className="text-2xl mb-6 font-semibold">
+        {editing ? "Edit Today's Workout" : "Add Workout for the Day"}
+      </h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {exercises.map((ex, i) => (

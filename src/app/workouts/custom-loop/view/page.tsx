@@ -46,6 +46,29 @@ if (userRoutine?.days?.length) {
     fetchRoutine();
   }, []);
 
+  const handleDelete = async () => {
+    const confirmed = window.confirm("Are you sure you want to delete this routine?");
+    if (!confirmed) return;
+  
+    try {
+      const res = await fetch("/api/routine", {
+        method: "DELETE",
+        credentials: "include",
+      });
+  
+      if (res.ok) {
+        alert("Routine deleted.");
+        router.push("/workouts"); // or go to the setup page instead
+      } else {
+        alert("Failed to delete routine");
+      }
+    } catch (err) {
+      console.error("Failed to delete routine", err);
+      alert("Something went wrong.");
+    }
+  };
+  
+
   const handleStartWorkout = () => {
     router.push("/workouts/custom-loop/day");
   };
@@ -91,6 +114,13 @@ if (userRoutine?.days?.length) {
           Edit Routine
         </button>
       </div>
+
+      <button
+  onClick={handleDelete}
+  className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
+>
+  Delete Routine
+</button>
 
       <button
         onClick={() => router.push("/workouts")}

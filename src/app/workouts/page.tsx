@@ -52,41 +52,23 @@ export default function WorkoutsPage() {
 
       {/* Content */}
       <div className="flex flex-col gap-4 items-start mt-6">
-        <h1 className="text-3xl font-bold">Your Workouts</h1>
+  <h1 className="text-3xl font-bold">Your Workouts</h1>
 
-        {hasWorkout && (
-          <button
-            onClick={() => router.push("/workouts/view")}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-          >
-            View Your Workout
-          </button>
-        )}
+  <button
+    onClick={() => router.push("/workouts/view")}
+    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+  >
+    View Today's Workout
+  </button>
 
-        <button
-          onClick={handleAddRoutineClick}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Add Routine
-        </button>
+  <button
+    onClick={() => router.push("/workouts/custom-loop")}
+    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+  >
+    Setup Custom Routine
+  </button>
+</div>
 
-        {showOptions && (
-          <div className="flex flex-col gap-2 mt-2">
-            <button
-              onClick={() => router.push("/workouts/new-day")}
-              className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
-            >
-              Workout for the Day
-            </button>
-            <button
-              onClick={() => router.push("/workouts/custom-loop")}
-              className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700"
-            >
-              Customized Routine
-            </button>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
