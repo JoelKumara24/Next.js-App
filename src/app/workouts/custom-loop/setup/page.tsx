@@ -81,6 +81,13 @@ export default function CustomLoopSetupPage() {
     setRoutine(updated);
   };
 
+  const deleteExercise = (dayIndex: number, exIndex: number) => {
+    const updated = [...routine];
+    updated[dayIndex].splice(exIndex, 1);
+    setRoutine(updated);
+  };
+  
+
   const handleSave = async () => {
     const token = localStorage.getItem("token");
     if (!token) return alert("Not logged in");
@@ -149,6 +156,13 @@ export default function CustomLoopSetupPage() {
                     handleChange(dayIndex, exIndex, "time", e.target.value)
                   }
                 />
+                 <button
+      type="button"
+      onClick={() => deleteExercise(dayIndex, exIndex)}
+      className="text-red-500 hover:text-red-700 text-sm"
+    >
+      ✕
+    </button>
               </div>
             ))}
             <button

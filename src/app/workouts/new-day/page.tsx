@@ -30,6 +30,13 @@ export default function AddWorkoutDayPage() {
     fetchExistingWorkout();
   }, []);
 
+  const deleteExercise = (index: number) => {
+    const updated = [...exercises];
+    updated.splice(index, 1);
+    setExercises(updated);
+  };
+  
+
   const handleChange = (index: number, field: string, value: string) => {
     const updated = [...exercises];
     updated[index][field as keyof typeof updated[0]] = value;
@@ -49,6 +56,7 @@ export default function AddWorkoutDayPage() {
       data: exercises.map((ex) => ({ ...ex, checked: false })),
     };
 
+    
     if (editing) {
       // Delete the latest one before re-saving
       await fetch("/api/workouts", {
@@ -76,34 +84,41 @@ export default function AddWorkoutDayPage() {
       </h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {exercises.map((ex, i) => (
-          <div key={i} className="grid grid-cols-4 gap-2">
-            <input
-              placeholder="Exercise"
-              value={ex.exercise}
-              onChange={(e) => handleChange(i, "exercise", e.target.value)}
-              className="p-2 bg-zinc-800 border border-zinc-700 rounded"
-            />
-            <input
-              placeholder="Sets"
-              value={ex.sets}
-              onChange={(e) => handleChange(i, "sets", e.target.value)}
-              className="p-2 bg-zinc-800 border border-zinc-700 rounded"
-            />
-            <input
-              placeholder="Reps"
-              value={ex.reps}
-              onChange={(e) => handleChange(i, "reps", e.target.value)}
-              className="p-2 bg-zinc-800 border border-zinc-700 rounded"
-            />
-            <input
-              placeholder="Time"
-              value={ex.time}
-              onChange={(e) => handleChange(i, "time", e.target.value)}
-              className="p-2 bg-zinc-800 border border-zinc-700 rounded"
-            />
-          </div>
-        ))}
+      {exercises.map((ex, i) => (
+  <div key={i} className="grid grid-cols-5 gap-2 items-center">
+    <input
+      placeholder="Exercise"
+      value={ex.exercise}
+      onChange={(e) => handleChange(i, "exercise", e.target.value)}
+      className="p-2 bg-zinc-800 border border-zinc-700 rounded"
+    />
+    <input
+      placeholder="Sets"
+      value={ex.sets}
+      onChange={(e) => handleChange(i, "sets", e.target.value)}
+      className="p-2 bg-zinc-800 border border-zinc-700 rounded"
+    />
+    <input
+      placeholder="Reps"
+      value={ex.reps}
+      onChange={(e) => handleChange(i, "reps", e.target.value)}
+      className="p-2 bg-zinc-800 border border-zinc-700 rounded"
+    />
+    <input
+      placeholder="Time"
+      value={ex.time}
+      onChange={(e) => handleChange(i, "time", e.target.value)}
+      className="p-2 bg-zinc-800 border border-zinc-700 rounded"
+    />
+    <button
+      type="button"
+      onClick={() => deleteExercise(i)}
+      className="text-red-500 hover:text-red-700 text-sm"
+    >
+      ✕
+    </button>
+  </div>
+))}
 
         <button
           type="button"
