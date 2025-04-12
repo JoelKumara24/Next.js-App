@@ -62,7 +62,7 @@ export default function WeightsPage() {
   };
 
   return (
-    <div className="text-white min-h-screen bg-black p-8">
+    <div className="text-white min-h-screen bg-black">
       {/* Dashboard Navbar */}
       <nav className="flex justify-between items-center bg-zinc-900 px-6 py-4 shadow-md mb-8">
         <div className="flex gap-6 text-lg font-medium">

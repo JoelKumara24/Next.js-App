@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface Exercise {
   exercise: string;
@@ -83,42 +84,70 @@ export default function CustomWorkoutDayPage() {
 
   return (
     <div className="text-white bg-black min-h-screen p-10">
-      <h1 className="text-2xl font-bold mb-6">Workout - Day {dayIndex + 1}</h1>
-      <button
-        onClick={() => router.push("/workouts/custom-loop/view")}
-        className="mb-4 bg-gray-700 hover:bg-gray-600 text-sm px-4 py-2 rounded"
-      >
-        ← Back
-      </button>
-
-      <table className="table-auto w-full text-left">
-        <thead>
-          <tr className="text-gray-400 border-b border-gray-600">
-            <th className="px-4 py-2">Exercise</th>
-            <th className="px-4 py-2">Sets</th>
-            <th className="px-4 py-2">Reps</th>
-            <th className="px-4 py-2">Time</th>
-            <th className="px-4 py-2">Done</th>
-          </tr>
-        </thead>
-        <tbody>
-          {exercises.map((ex, i) => (
-            <tr key={i} className="border-b border-gray-700">
-              <td className="px-4 py-2">{ex.exercise}</td>
-              <td className="px-4 py-2">{ex.sets}</td>
-              <td className="px-4 py-2">{ex.reps}</td>
-              <td className="px-4 py-2">{ex.time}</td>
-              <td className="px-4 py-2">
-                <input
-                  type="checkbox"
-                  checked={ex.checked}
-                  onChange={() => handleCheck(i)}
-                />
-              </td>
+      {/* Dashboard Navbar */}
+      <nav className="flex justify-between items-center bg-zinc-900 px-6 py-4 shadow-md mb-8">
+        <div className="flex gap-6 text-lg font-medium">
+          <Link href="/dashboard" className="hover:text-blue-500">Dashboard</Link>
+          <Link href="/workouts" className="hover:text-blue-500">Workouts</Link>
+          <Link href="/weight" className="hover:text-blue-500">Weight</Link>
+          <Link href="/progress" className="hover:text-blue-500">Progress</Link>
+          <Link href="/pbs" className="hover:text-blue-500">PBs</Link>
+        </div>
+        <button
+          onClick={async () => {
+            await fetch("/api/auth/logout", { method: "POST" });
+            router.push("/login");
+          }}
+          className="bg-red-600 px-4 py-2 text-sm rounded hover:bg-red-700"
+        >
+          Logout
+        </button>
+      </nav>
+  
+      {/* Page Title + Back */}
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold">💪 Workout - Day {dayIndex + 1}</h1>
+        <button
+          onClick={() => router.push("/workouts/custom-loop/view")}
+          className="bg-zinc-700 hover:bg-zinc-600 text-sm px-4 py-2 rounded shadow"
+        >
+          ← Back
+        </button>
+      </div>
+  
+      {/* Workout Table */}
+      <div className="overflow-x-auto rounded-xl border border-zinc-800 shadow-lg">
+        <table className="table-auto w-full text-left">
+          <thead className="bg-zinc-900 text-gray-400 uppercase text-sm">
+            <tr>
+              <th className="px-6 py-3">Exercise</th>
+              <th className="px-6 py-3">Sets</th>
+              <th className="px-6 py-3">Reps</th>
+              <th className="px-6 py-3">Time (min)</th>
+              <th className="px-6 py-3 text-center">Done</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {exercises.map((ex, i) => (
+              <tr key={i} className="border-t border-zinc-800 hover:bg-zinc-800/50 transition">
+                <td className="px-6 py-4">{ex.exercise}</td>
+                <td className="px-6 py-4">{ex.sets}</td>
+                <td className="px-6 py-4">{ex.reps}</td>
+                <td className="px-6 py-4">{ex.time}</td>
+                <td className="px-6 py-4 text-center">
+                  <input
+                    type="checkbox"
+                    checked={ex.checked}
+                    onChange={() => handleCheck(i)}
+                    className="w-5 h-5 accent-green-500 hover:cursor-pointer"
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
+  
 }

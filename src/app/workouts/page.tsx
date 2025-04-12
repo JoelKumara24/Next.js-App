@@ -29,7 +29,7 @@ export default function WorkoutsPage() {
   };
 
   return (
-    <div className="text-white min-h-screen bg-black p-8">
+    <div className="text-white min-h-screen bg-black">
       {/* Navbar */}
       <nav className="flex justify-between items-center bg-zinc-900 px-6 py-4 shadow-md">
         <div className="flex gap-6 text-lg font-medium">
@@ -44,31 +44,33 @@ export default function WorkoutsPage() {
             await fetch("/api/auth/logout", { method: "POST" });
             router.push("/login");
           }}
-          className="bg-red-600 px-4 py-2 text-sm rounded hover:bg-red-700"
+          className="bg-red-600 px-4 py-2 text-sm rounded hover:bg-red-700 transition"
         >
           Logout
         </button>
       </nav>
-
+  
       {/* Content */}
-      <div className="flex flex-col gap-4 items-start mt-6">
-  <h1 className="text-3xl font-bold">Your Workouts</h1>
-
-  <button
-    onClick={() => router.push("/workouts/view")}
-    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-  >
-    View Today's Workout
-  </button>
-
-  <button
-    onClick={() => router.push("/workouts/custom-loop")}
-    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-  >
-    View Custom Routine
-  </button>
-</div>
-
+      <main className="p-10">
+        <h1 className="text-4xl font-bold mb-8">Your Workouts</h1>
+  
+        <div className="flex flex-col sm:flex-row gap-6">
+          <button
+            onClick={() => router.push("/workouts/view")}
+            className="bg-green-600 hover:bg-green-700 transition px-6 py-3 rounded-lg text-lg font-medium"
+          >
+            ✅ View Today's Workout
+          </button>
+  
+          <button
+            onClick={() => router.push("/workouts/custom-loop")}
+            className="bg-blue-600 hover:bg-blue-700 transition px-6 py-3 rounded-lg text-lg font-medium"
+          >
+            🔁 View Custom Routine
+          </button>
+        </div>
+      </main>
     </div>
   );
+  
 }

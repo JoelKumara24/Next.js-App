@@ -35,18 +35,21 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* NAVBAR */}
-      <nav className="flex justify-between items-center bg-zinc-900 px-6 py-4 shadow-md">
-        <div className="flex gap-6 text-sm font-medium">
-          <Link href="/dashboard" className="hover:text-blue-400">Dashboard</Link>
-          <Link href="/workouts" className="hover:text-blue-400">Workouts</Link>
-          <Link href="/weight" className="hover:text-blue-400">Weight</Link>
-          <Link href="/progress" className="hover:text-blue-400">Progress</Link>
-          <Link href="/pbs" className="hover:text-blue-400">PBs</Link>
+      {/* Nav */}
+      <nav className="flex justify-between items-center bg-zinc-900 px-6 py-4 shadow-md mb-8">
+        <div className="flex gap-6 text-lg font-medium">
+          <button onClick={() => router.push("/dashboard")} className="hover:text-blue-500">Dashboard</button>
+          <button onClick={() => router.push("/workouts")} className="hover:text-blue-500">Workouts</button>
+          <button onClick={() => router.push("/weight")} className="hover:text-blue-500">Weight</button>
+          <button onClick={() => router.push("/progress")} className="hover:text-blue-500">Progress</button>
+          <button onClick={() => router.push("/pbs")} className="hover:text-blue-500">PBs</button>
         </div>
         <button
-          onClick={handleLogout}
-          className="text-sm bg-red-600 px-3 py-1 rounded hover:bg-red-700"
+          onClick={async () => {
+            await fetch("/api/auth/logout", { method: "POST" });
+            router.push("/login");
+          }}
+          className="bg-red-600 px-4 py-2 text-sm rounded hover:bg-red-700"
         >
           Logout
         </button>

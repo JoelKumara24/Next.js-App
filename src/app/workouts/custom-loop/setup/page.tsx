@@ -114,18 +114,28 @@ export default function CustomLoopSetupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-8">
-      <h1 className="text-3xl font-bold mb-6">
+    <div className="min-h-screen bg-black text-white py-12 px-6">
+      <h1 className="text-4xl font-bold mb-10 text-center">
         Setup Your Custom Routine ({days} Days)
       </h1>
-      <div className="space-y-8">
+  
+      <div className="space-y-12 max-w-5xl mx-auto">
         {routine.map((day, dayIndex) => (
-          <div key={dayIndex} className="bg-zinc-900 p-4 rounded-xl">
-            <h2 className="text-xl font-semibold mb-4">Day {dayIndex + 1}</h2>
+          <div
+            key={dayIndex}
+            className="bg-zinc-900 p-6 rounded-2xl shadow-md border border-zinc-700"
+          >
+            <h2 className="text-2xl font-semibold mb-6 text-blue-400">
+              Day {dayIndex + 1}
+            </h2>
+  
             {day.map((ex, exIndex) => (
-              <div key={exIndex} className="grid grid-cols-4 gap-2 mb-2">
+              <div
+                key={exIndex}
+                className="grid grid-cols-5 gap-4 mb-4 items-center"
+              >
                 <input
-                  className="p-2 bg-zinc-800 border border-zinc-700 rounded"
+                  className="p-3 bg-zinc-800 border border-zinc-700 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Exercise"
                   value={ex.exercise}
                   onChange={(e) =>
@@ -133,7 +143,7 @@ export default function CustomLoopSetupPage() {
                   }
                 />
                 <input
-                  className="p-2 bg-zinc-800 border border-zinc-700 rounded"
+                  className="p-3 bg-zinc-800 border border-zinc-700 rounded-lg w-full focus:outline-none"
                   placeholder="Sets"
                   value={ex.sets}
                   onChange={(e) =>
@@ -141,7 +151,7 @@ export default function CustomLoopSetupPage() {
                   }
                 />
                 <input
-                  className="p-2 bg-zinc-800 border border-zinc-700 rounded"
+                  className="p-3 bg-zinc-800 border border-zinc-700 rounded-lg w-full focus:outline-none"
                   placeholder="Reps"
                   value={ex.reps}
                   onChange={(e) =>
@@ -149,44 +159,49 @@ export default function CustomLoopSetupPage() {
                   }
                 />
                 <input
-                  className="p-2 bg-zinc-800 border border-zinc-700 rounded"
-                  placeholder="Time"
+                  className="p-3 bg-zinc-800 border border-zinc-700 rounded-lg w-full focus:outline-none"
+                  placeholder="Time (mins)"
                   value={ex.time}
                   onChange={(e) =>
                     handleChange(dayIndex, exIndex, "time", e.target.value)
                   }
                 />
-                 <button
-      type="button"
-      onClick={() => deleteExercise(dayIndex, exIndex)}
-      className="text-red-500 hover:text-red-700 text-sm"
-    >
-      ✕
-    </button>
+                <button
+                  type="button"
+                  onClick={() => deleteExercise(dayIndex, exIndex)}
+                  className="text-red-500 hover:text-red-700 text-xl font-bold"
+                >
+                  ✕
+                </button>
               </div>
             ))}
+  
             <button
               onClick={() => addExercise(dayIndex)}
-              className="bg-gray-700 hover:bg-gray-600 text-sm px-4 py-1 rounded mt-2"
+              className="mt-4 text-sm bg-zinc-700 hover:bg-zinc-600 px-5 py-2 rounded-md shadow transition"
             >
-              Add Exercise
+              ➕ Add Exercise
             </button>
           </div>
         ))}
-
-        <button
-          onClick={handleSave}
-          className="mt-8 bg-green-600 hover:bg-green-700 px-6 py-2 rounded"
-        >
-          Save Routine
-        </button>
-        <button
-          onClick={() => router.push("/workouts/custom-loop/view")}
-          className="mb-4 bg-gray-700 hover:bg-gray-600 text-sm px-4 py-2 rounded"
-        >
-          ← Back
-        </button>
+  
+        {/* Action buttons */}
+        <div className="flex justify-center gap-6 mt-12">
+          <button
+            onClick={handleSave}
+            className="bg-green-600 hover:bg-green-700 px-8 py-3 rounded-md shadow-lg text-lg font-semibold transition"
+          >
+            ✅ Save Routine
+          </button>
+          <button
+            onClick={() => router.push("/workouts/custom-loop/view")}
+            className="bg-zinc-700 hover:bg-zinc-600 px-8 py-3 rounded-md text-lg transition"
+          >
+            ← Back
+          </button>
+        </div>
       </div>
     </div>
   );
+  
 }

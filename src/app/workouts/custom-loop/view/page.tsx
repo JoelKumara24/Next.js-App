@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface Exercise {
   exercise: string;
@@ -94,40 +95,63 @@ if (userRoutine?.days?.length) {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-10">
-      <h1 className="text-3xl font-bold mb-6">Your Custom Routine</h1>
-      <p className="mb-4 text-lg">
-        Today is <span className="font-semibold">Day {dayIndex + 1}</span>
-      </p>
-
-      <div className="flex gap-4 mb-6">
+    <div className="min-h-screen bg-black text-white">
+      {/* Navbar */}
+      <nav className="flex justify-between items-center bg-zinc-900 px-8 py-4 shadow-md">
+        <div className="flex gap-8 text-lg font-medium">
+          <Link href="/dashboard" className="hover:text-blue-400 transition">Dashboard</Link>
+          <Link href="/workouts" className="hover:text-blue-400 transition">Workouts</Link>
+          <Link href="/weight" className="hover:text-blue-400 transition">Weight</Link>
+          <Link href="/progress" className="hover:text-blue-400 transition">Progress</Link>
+          <Link href="/pbs" className="hover:text-blue-400 transition">PBs</Link>
+        </div>
         <button
-          onClick={handleStartWorkout}
-          className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
+          onClick={async () => {
+            await fetch("/api/auth/logout", { method: "POST" });
+            router.push("/login");
+          }}
+          className="bg-red-600 hover:bg-red-700 px-5 py-2 rounded-md text-sm font-medium transition"
         >
-          Start Today's Workout
+          Logout
         </button>
-        <button
-          onClick={handleEdit}
-          className="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded"
-        >
-          Edit Routine
-        </button>
-      </div>
-
-      <button
-  onClick={handleDelete}
-  className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
->
-  Delete Routine
-</button>
-
-      <button
-        onClick={() => router.push("/workouts")}
-        className="bg-gray-700 hover:bg-gray-600 text-sm px-4 py-2 rounded"
-      >
-        ← Back
-      </button>
+      </nav>
+  
+      {/* Content */}
+      <main className="max-w-4xl mx-auto py-12 px-6">
+        <h1 className="text-4xl font-bold mb-4">Your Custom Routine</h1>
+        <p className="text-xl text-gray-300 mb-10">
+          Today is <span className="text-white font-semibold">Day {dayIndex + 1}</span>
+        </p>
+  
+        {/* Buttons Row */}
+        <div className="flex flex-wrap gap-4 mb-10">
+          <button
+            onClick={handleStartWorkout}
+            className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-md shadow hover:shadow-lg transition text-lg font-semibold"
+          >
+            Start Today&apos;s Workout
+          </button>
+          <button
+            onClick={handleEdit}
+            className="bg-yellow-500 hover:bg-yellow-600 px-6 py-3 rounded-md shadow hover:shadow-lg transition text-lg font-semibold text-black"
+          >
+            Edit Routine
+          </button>
+          <button
+            onClick={handleDelete}
+            className="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-md shadow hover:shadow-lg transition text-lg font-semibold"
+          >
+            Delete Routine
+          </button>
+          <button
+            onClick={() => router.push("/workouts")}
+            className="bg-zinc-700 hover:bg-zinc-600 px-6 py-3 rounded-md shadow hover:shadow-lg transition text-lg font-medium"
+          >
+            ← Back
+          </button>
+        </div>
+      </main>
     </div>
   );
+  
 }
