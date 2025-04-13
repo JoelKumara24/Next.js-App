@@ -35,3 +35,32 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Failed to save weight" }, { status: 500 });
   }
 }
+
+export async function DELETE(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+
+  try {
+    await connectToDB();
+    await Weight.findByIdAndDelete(id);
+    return NextResponse.json({ message: "Deleted" });
+  } catch (err) {
+    return NextResponse.json({ error: "Failed to delete" }, { status: 500 });
+  }
+}
+
+export async function PUT(req: Request) {
+  const { id, weight } = await req.json();
+
+  try {
+    await connectToDB();
+    const updated = await Weight.findByIdAndUpdate(
+      id,
+      { weight },
+      { new: true }
+    );
+    return NextResponse.json(updated);
+  } catch (err) {
+    return NextResponse.json({ error: "Failed to update" }, { status: 500 });
+  }
+}

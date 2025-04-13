@@ -25,8 +25,19 @@ export async function POST(req: Request) {
     await newUser.save();
 
     return NextResponse.json({ message: "User registered successfully!" }, { status: 201 });
-  } catch (err) {
-    console.error(err);
+  } catch (err: any) {
+    console.error("Registration Error:", err);
+  
+    // Duplicate key error
+    if (err.code === 11000) {
+      const duplicatedField = Object.keys(err.keyPattern)[0];
+      return NextResponse.json(
+        { error: `${duplicatedField.charAt(0).toUpperCase() + duplicatedField.slice(1)} already exists` },
+        { status: 400 }
+      );
+    }
+  
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
+  
 }

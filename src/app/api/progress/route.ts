@@ -45,3 +45,16 @@ export async function POST(req: Request) {
 
   return NextResponse.json(saved);
 }
+
+export async function DELETE(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+
+  try {
+    await connectToDB();
+    await ProgressPhoto.findByIdAndDelete(id);
+    return NextResponse.json({ message: "Photo deleted" });
+  } catch (err) {
+    return NextResponse.json({ error: "Failed to delete photo" }, { status: 500 });
+  }
+}
