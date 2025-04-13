@@ -2,13 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongodb";
 import Weight from "@/models/Weights";
 
-// ✅ Use correct type for context param
 export async function PUT(
   req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Record<string, string> }
 ) {
   try {
-    const { id } = context.params;
+    const id = context.params.id;
     const { weight } = await req.json();
 
     await connectToDB();
@@ -26,11 +25,10 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Record<string, string> }
 ) {
   try {
-    const { id } = context.params;
-
+    const id = context.params.id;
     await connectToDB();
     await Weight.findByIdAndDelete(id);
 
