@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongodb";
 import Weight from "@/models/Weights"; // ✅ matches the file name
 
@@ -36,31 +36,44 @@ export async function POST(req: Request) {
   }
 }
 
-export async function DELETE(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get("id");
+// PUT update by ID (pass ID as a query param)
+export async function PUT(req: NextRequest) {
+  const url = new URL(req.url);
+  const id = url.searchParams.get("id");
+  const { weight } = await req.json();
+
+  if (!id) {
+    return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+  }
+
+  try {
+    await connectToDB();
+    const updated = await Weight.findByIdAndUpdate(id, { weight }, { new: true });
+
+    if (!updated) {
+      return NextResponse.json({ error: "Weight not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(updated);
+  } catch (err) {
+    return NextResponse.json({ error: "Failed to update weight" }, { status: 500 });
+  }
+}
+
+// DELETE by ID (pass ID as a query param)
+export async function DELETE(req: NextRequest) {
+  const url = new URL(req.url);
+  const id = url.searchParams.get("id");
+
+  if (!id) {
+    return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+  }
 
   try {
     await connectToDB();
     await Weight.findByIdAndDelete(id);
     return NextResponse.json({ message: "Deleted" });
   } catch (err) {
-    return NextResponse.json({ error: "Failed to delete" }, { status: 500 });
-  }
-}
-
-export async function PUT(req: Request) {
-  const { id, weight } = await req.json();
-
-  try {
-    await connectToDB();
-    const updated = await Weight.findByIdAndUpdate(
-      id,
-      { weight },
-      { new: true }
-    );
-    return NextResponse.json(updated);
-  } catch (err) {
-    return NextResponse.json({ error: "Failed to update" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to delete weight" }, { status: 500 });
   }
 }

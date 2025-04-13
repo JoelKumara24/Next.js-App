@@ -41,7 +41,8 @@ export default function WeightsPage() {
     const today = new Date().toISOString().split("T")[0];
 
     if (editingId) {
-      const res = await fetch(`/api/weights/${editingId}`, {
+      const res = await fetch(`/api/weights?id=${editingId}`, {
+
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -69,7 +70,8 @@ export default function WeightsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    await fetch(`/api/weights/${id}`, {
+    await fetch(`/api/weights?id=${id}`, {
+
       method: "DELETE",
       credentials: "include",
     });
