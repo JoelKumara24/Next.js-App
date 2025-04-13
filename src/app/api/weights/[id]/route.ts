@@ -2,16 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongodb";
 import Weight from "@/models/Weights";
 
+// Fix: Use explicit 'RouteHandlerContext' type or inline fallback
+interface RouteContext {
+  params: {
+    id: string;
+  };
+}
+
 export async function PUT(
   req: NextRequest,
-  context: { params: Record<string, string> }
+  context: RouteContext
 ) {
   try {
-    const id = context.params.id;
     const { weight } = await req.json();
-
     await connectToDB();
-    const updated = await Weight.findByIdAndUpdate(id, { weight }, { new: true });
+
+    const updated = await Weight.findByIdAndUpdate(context.params.id, { weight }, { new: true });
 
     if (!updated) {
       return NextResponse.json({ error: "Weight not found" }, { status: 404 });
@@ -25,12 +31,11 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: Record<string, string> }
+  context: RouteContext
 ) {
   try {
-    const id = context.params.id;
     await connectToDB();
-    await Weight.findByIdAndDelete(id);
+    await Weight.findByIdAndDelete(context.params.id);
 
     return NextResponse.json({ message: "Deleted" });
   } catch (error) {
