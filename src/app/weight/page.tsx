@@ -13,9 +13,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// ...imports remain the same
 interface WeightEntry {
-  _id?: string; // assuming from DB
+  _id?: string;
   date: string;
   weight: number;
 }
@@ -42,7 +41,6 @@ export default function WeightsPage() {
 
     if (editingId) {
       const res = await fetch(`/api/weights?id=${editingId}`, {
-
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -71,7 +69,6 @@ export default function WeightsPage() {
 
   const handleDelete = async (id: string) => {
     await fetch(`/api/weights?id=${id}`, {
-
       method: "DELETE",
       credentials: "include",
     });
@@ -84,15 +81,19 @@ export default function WeightsPage() {
   };
 
   return (
-    <div className="text-white min-h-screen bg-black">
+    <div className="min-h-screen bg-black text-white">
       {/* Navbar */}
-      <nav className="flex justify-between items-center bg-zinc-900 px-6 py-4 shadow-md mb-8">
-        <div className="flex gap-6 text-lg font-medium">
-          <Link href="/dashboard" className="hover:text-blue-500">Dashboard</Link>
-          <Link href="/workouts" className="hover:text-blue-500">Workouts</Link>
-          <Link href="/weight" className="hover:text-blue-500">Weight</Link>
-          <Link href="/progress" className="hover:text-blue-500">Progress</Link>
-          <Link href="/pbs" className="hover:text-blue-500">PBs</Link>
+      <nav className="flex flex-wrap justify-between items-center bg-zinc-900 px-6 py-4 shadow-md mb-8">
+        <div className="flex flex-wrap gap-4 text-lg font-medium">
+          {["dashboard", "workouts", "weight", "progress", "pbs"].map((page) => (
+            <Link
+              key={page}
+              href={`/${page}`}
+              className="hover:text-blue-500 capitalize"
+            >
+              {page}
+            </Link>
+          ))}
         </div>
         <button
           onClick={async () => {
@@ -105,19 +106,24 @@ export default function WeightsPage() {
         </button>
       </nav>
 
-      <div className="px-10">
-        <h1 className="text-3xl font-bold mb-6">Track Your Weight</h1>
+      <div className="px-6 sm:px-10">
+        <h1 className="text-3xl font-bold mb-6 text-center sm:text-left">
+          Track Your Weight
+        </h1>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex gap-4 items-center mb-6">
+        <form onSubmit={handleSubmit} className="flex flex-wrap gap-4 items-center mb-6">
           <input
             type="number"
             value={weight}
             onChange={(e) => setWeight(parseFloat(e.target.value))}
-            className="p-2 bg-zinc-800 border border-zinc-700 rounded"
+            className="p-2 bg-zinc-800 border border-zinc-700 rounded w-40"
             placeholder="Enter weight"
           />
-          <button type="submit" className="bg-green-600 px-4 py-2 rounded hover:bg-green-700">
+          <button
+            type="submit"
+            className="bg-green-600 px-4 py-2 rounded hover:bg-green-700"
+          >
             {editingId ? "Update" : "Save"}
           </button>
           {editingId && (
@@ -135,16 +141,20 @@ export default function WeightsPage() {
         </form>
 
         {/* Toggle View */}
-        <div className="mb-6">
+        <div className="mb-6 flex gap-4">
           <button
             onClick={() => setViewMode("table")}
-            className={`px-4 py-2 mr-2 rounded ${viewMode === "table" ? "bg-blue-600" : "bg-gray-700"}`}
+            className={`px-4 py-2 rounded ${
+              viewMode === "table" ? "bg-blue-600" : "bg-zinc-700"
+            }`}
           >
             Table View
           </button>
           <button
             onClick={() => setViewMode("graph")}
-            className={`px-4 py-2 rounded ${viewMode === "graph" ? "bg-blue-600" : "bg-gray-700"}`}
+            className={`px-4 py-2 rounded ${
+              viewMode === "graph" ? "bg-blue-600" : "bg-zinc-700"
+            }`}
           >
             Graph View
           </button>
@@ -152,41 +162,50 @@ export default function WeightsPage() {
 
         {/* Views */}
         {viewMode === "table" ? (
-          <table className="w-full border border-zinc-800 rounded-lg overflow-hidden shadow-md">
-          <thead className="bg-zinc-900 text-gray-300">
-            <tr>
-              <th className="px-6 py-3 text-left text-sm uppercase tracking-wider">Date</th>
-              <th className="px-6 py-3 text-left text-sm uppercase tracking-wider">Weight</th>
-              <th className="px-6 py-3 text-left text-sm uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {weights.map((w) => (
-              <tr
-                key={w._id}
-                className="hover:bg-zinc-800 transition duration-150 ease-in-out border-b border-zinc-800"
-              >
-                <td className="px-6 py-4">{w.date}</td>
-                <td className="px-6 py-4 font-semibold text-white">{w.weight} kg</td>
-                <td className="px-6 py-4 flex gap-4">
-                  <button
-                    onClick={() => startEdit(w)}
-                    className="text-blue-400 hover:text-blue-500 transition"
+          <div className="overflow-x-auto">
+            <table className="min-w-full border border-zinc-800 rounded-lg shadow-md">
+              <thead className="bg-zinc-900 text-gray-300">
+                <tr>
+                  <th className="px-6 py-3 text-left text-sm uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm uppercase tracking-wider">
+                    Weight (kg)
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {weights.map((w) => (
+                  <tr
+                    key={w._id}
+                    className={`transition duration-150 ease-in-out border-b border-zinc-800 ${
+                      editingId === w._id ? "bg-zinc-800" : "hover:bg-zinc-800"
+                    }`}
                   >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(w._id!)}
-                    className="text-red-500 hover:text-red-600 transition"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        
+                    <td className="px-6 py-4">{w.date}</td>
+                    <td className="px-6 py-4 font-semibold">{w.weight}</td>
+                    <td className="px-6 py-4 flex gap-4">
+                      <button
+                        onClick={() => startEdit(w)}
+                        className="text-blue-400 hover:text-blue-500"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(w._id!)}
+                        className="text-red-500 hover:text-red-600"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={weights}>
