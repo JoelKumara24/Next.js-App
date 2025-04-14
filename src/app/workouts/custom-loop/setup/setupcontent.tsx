@@ -20,15 +20,12 @@ export default function CustomLoopSetupPage() {
 
   useEffect(() => {
     const initializeRoutine = async () => {
-      
-
       try {
         const res = await fetch("/api/routine", {
           credentials: "include",
         });
 
         const existingRoutine = await res.json();
-
 
         if (res.ok && existingRoutine?.days?.length) {
           if (isEdit) {
@@ -51,7 +48,6 @@ export default function CustomLoopSetupPage() {
           }
         }
 
-        // No existing routine or just deleted → create blank
         if (days > 0) {
           const newRoutine: Exercise[][] = Array.from({ length: days }, () => []);
           setRoutine(newRoutine);
@@ -86,7 +82,6 @@ export default function CustomLoopSetupPage() {
     updated[dayIndex].splice(exIndex, 1);
     setRoutine(updated);
   };
-  
 
   const handleSave = async () => {
     const token = localStorage.getItem("token");
@@ -118,7 +113,7 @@ export default function CustomLoopSetupPage() {
       <h1 className="text-4xl font-bold mb-10 text-center">
         Setup Your Custom Routine ({days} Days)
       </h1>
-  
+
       <div className="space-y-12 max-w-5xl mx-auto">
         {routine.map((day, dayIndex) => (
           <div
@@ -128,7 +123,7 @@ export default function CustomLoopSetupPage() {
             <h2 className="text-2xl font-semibold mb-6 text-blue-400">
               Day {dayIndex + 1}
             </h2>
-  
+
             {day.map((ex, exIndex) => (
               <div
                 key={exIndex}
@@ -137,31 +132,34 @@ export default function CustomLoopSetupPage() {
                 <input
                   className="p-3 bg-zinc-800 border border-zinc-700 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Exercise"
-                  value={ex.exercise}
+                  value={ex.exercise || ""}
                   onChange={(e) =>
                     handleChange(dayIndex, exIndex, "exercise", e.target.value)
                   }
                 />
                 <input
+                  type="number"
                   className="p-3 bg-zinc-800 border border-zinc-700 rounded-lg w-full focus:outline-none"
                   placeholder="Sets"
-                  value={ex.sets}
+                  value={ex.sets || ""}
                   onChange={(e) =>
                     handleChange(dayIndex, exIndex, "sets", e.target.value)
                   }
                 />
                 <input
+                  type="number"
                   className="p-3 bg-zinc-800 border border-zinc-700 rounded-lg w-full focus:outline-none"
                   placeholder="Reps"
-                  value={ex.reps}
+                  value={ex.reps || ""}
                   onChange={(e) =>
                     handleChange(dayIndex, exIndex, "reps", e.target.value)
                   }
                 />
                 <input
+                  type="number"
                   className="p-3 bg-zinc-800 border border-zinc-700 rounded-lg w-full focus:outline-none"
                   placeholder="Time (mins)"
-                  value={ex.time}
+                  value={ex.time || ""}
                   onChange={(e) =>
                     handleChange(dayIndex, exIndex, "time", e.target.value)
                   }
@@ -175,7 +173,7 @@ export default function CustomLoopSetupPage() {
                 </button>
               </div>
             ))}
-  
+
             <button
               onClick={() => addExercise(dayIndex)}
               className="mt-4 text-sm bg-zinc-700 hover:bg-zinc-600 px-5 py-2 rounded-md shadow transition"
@@ -184,8 +182,7 @@ export default function CustomLoopSetupPage() {
             </button>
           </div>
         ))}
-  
-        {/* Action buttons */}
+
         <div className="flex justify-center gap-6 mt-12">
           <button
             onClick={handleSave}
@@ -203,5 +200,4 @@ export default function CustomLoopSetupPage() {
       </div>
     </div>
   );
-  
 }
