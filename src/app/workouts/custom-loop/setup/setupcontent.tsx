@@ -84,27 +84,30 @@ export default function CustomLoopSetupPage() {
   };
 
   const handleSave = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return alert("Not logged in");
-
     const fullRoutine = {
       days: routine,
       currentDayIndex: 0,
     };
 
-    const res = await fetch("/api/routine", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(fullRoutine),
-    });
+    try {
+      const res = await fetch("/api/routine", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(fullRoutine),
+      });
 
-    if (res.ok) {
-      router.push("/workouts/custom-loop/view");
-    } else {
-      alert("Error saving routine");
+      if (res.ok) {
+        router.push("/workouts/custom-loop/view");
+      } else {
+        const data = await res.json();
+        alert(data?.error || "Error saving routine");
+      }
+    } catch (err) {
+      alert("Unexpected error saving routine");
+      console.error(err);
     }
   };
 
